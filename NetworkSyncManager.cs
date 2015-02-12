@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace NetworkSync { 
+namespace NetworkSync {
 
 
-public class NetworkSyncManagerBase<T> : MonoBehaviour
+public class NetworkSyncManager<T> : NetworkSyncManagerBase
     where T : MonoBehaviour
 {
 #region singleton
@@ -27,12 +27,23 @@ public class NetworkSyncManagerBase<T> : MonoBehaviour
         }
     }
 #endregion
+}
 
+public class NetworkSyncManagerBase : MonoBehaviour 
+{
 #region static method
     public static bool isOnline { get { return (Network.peerType == NetworkPeerType.Server) || (Network.peerType == NetworkPeerType.Client); } }
 
-    public static Object Instantiate(GameObject prefab) { return Instantiate(prefab, Vector3.zero, Quaternion.identity); }
-    public static Object Instantiate(GameObject prefab, Vector3 pos, Quaternion rot)
+    public static GameObject InstantiateChild(MonoBehaviour parent, Object prefab) { return InstantiateChild(parent, prefab, Vector3.zero, Quaternion.identity); }
+    public static GameObject InstantiateChild(MonoBehaviour parent, Object prefab, Vector3 pos, Quaternion rot)
+    {
+        var go = Instantiate(prefab, pos, rot) as GameObject;
+        if (go) go.transform.SetParent(parent.transform);
+        return go;
+    }
+
+    public static new Object Instantiate(Object prefab) { return Instantiate(prefab, Vector3.zero, Quaternion.identity); }
+    public static new Object Instantiate(Object prefab, Vector3 pos, Quaternion rot)
     {
         Object obj = null;
 
